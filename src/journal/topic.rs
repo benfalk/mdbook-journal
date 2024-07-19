@@ -43,13 +43,21 @@ impl Topic {
         TopicBuilder::new(name)
     }
 
+    pub(crate) fn dir_mapper(&self) -> DirMapper<'_> {
+        DirMapper::new(self)
+    }
+
+    pub(crate) fn filename_mapper(&self) -> FilenameMapper<'_> {
+        FilenameMapper::new(self)
+    }
+
     pub fn name(&self) -> &str {
         self.name.as_ref()
     }
 
     pub fn generate_entry<A>(&self, adapter: A) -> Result<Entry>
     where
-        A: TraitEntryGeneration,
+        A: EntryGenerationTrait,
     {
         let mut entry = Entry::builder(self.name());
         entry = entry.created_at(adapter.created_at()?);
@@ -77,13 +85,5 @@ impl Topic {
 
     pub fn source_root(&self) -> &PathBuf {
         &self.source_root
-    }
-
-    pub fn dir_mapper(&self) -> DirMapper<'_> {
-        DirMapper::new(self)
-    }
-
-    pub fn filename_mapper(&self) -> FilenameMapper<'_> {
-        FilenameMapper::new(self)
     }
 }

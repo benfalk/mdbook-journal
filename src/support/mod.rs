@@ -5,6 +5,7 @@
 //! via `#[cfg(test)]`.
 
 pub mod prelude {
+    pub use chrono::{Datelike, TimeZone};
     pub use mockall::{mock, predicate::*};
     pub use rstest::{fixture, rstest};
 }

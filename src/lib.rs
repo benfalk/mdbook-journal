@@ -1,25 +1,27 @@
 #![allow(dead_code, unused_imports)]
 
+mod journal;
+
 #[cfg(test)]
 mod support;
-
-mod journal;
 
 pub use journal::*;
 
 mod prelude {
-    pub use super::*;
+    pub(crate) use super::*;
 
-    pub use anyhow::{bail, Context, Result};
-    pub use chrono::{DateTime, Utc};
-    pub use convert_case::{Case, Casing};
+    pub(crate) use anyhow::{bail, Context, Result};
+    pub(crate) use chrono::{DateTime, Utc};
+    pub(crate) use convert_case::{Case, Casing};
+    pub(crate) use once_cell::sync::{Lazy, OnceCell};
+    pub(crate) use serde::{Deserialize, Serialize};
 
-    pub use std::collections::BTreeMap;
-    pub use std::path::PathBuf;
-    pub use std::sync::Arc;
+    pub(crate) use std::collections::BTreeMap;
+    pub(crate) use std::path::{Path, PathBuf};
+    pub(crate) use std::sync::Arc;
 
     #[cfg(test)]
-    pub use mockall::automock;
+    pub(crate) use mockall::automock;
 
     pub type UtcDateTime = DateTime<Utc>;
 }

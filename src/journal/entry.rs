@@ -17,7 +17,7 @@ pub struct Entry {
     /// Time this entry was created
     created_at: UtcDateTime,
     /// Location where this Entry is persisted to disk
-    file_loc: Option<PathBuf>,
+    pub(crate) file_loc: Option<PathBuf>,
     /// Additional data found in the entries front-matter
     meta: EntryMeta,
     /// The contents of the markdown file except
@@ -37,6 +37,10 @@ impl Entry {
         &self.created_at
     }
 
+    pub fn meta(&self) -> &EntryMeta {
+        &self.meta
+    }
+
     pub fn meta_value<K>(&self, key: &K) -> Option<&MetaValue>
     where
         K: AsRef<str>,
@@ -46,6 +50,10 @@ impl Entry {
 
     pub fn topic_name(&self) -> &str {
         self.topic.as_ref()
+    }
+
+    pub fn content(&self) -> &str {
+        &self.content
     }
 
     pub fn file_location(&self) -> Option<&PathBuf> {

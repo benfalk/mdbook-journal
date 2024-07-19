@@ -4,7 +4,7 @@ use crate::prelude::*;
 // to generate the required `Meta` for an `Entry`.
 //
 #[cfg_attr(test, automock)]
-pub trait TraitEntryGeneration {
+pub trait EntryGenerationTrait {
     fn created_at(&self) -> Result<UtcDateTime> {
         Ok(Utc::now())
     }

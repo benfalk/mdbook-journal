@@ -2,7 +2,8 @@ pub use crate::prelude::*;
 
 pub use serde_yaml::Value as MetaValue;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize)]
+#[serde(transparent)]
 pub struct EntryMeta {
     data: BTreeMap<String, MetaValue>,
 }

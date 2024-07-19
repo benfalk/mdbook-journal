@@ -1,19 +1,26 @@
-mod entry;
-mod topic;
-
 use crate::prelude::*;
 
+mod entry;
+mod persistence;
+mod topic;
+
 pub use entry::*;
+pub use persistence::*;
 pub use topic::*;
 
-pub struct Journal {
+pub struct Journal<P: EntryPersistenceTrait> {
     /// directory realative to the mdbook `SUMMARY.md`
     source_root: PathBuf,
     /// All of the topics tracked by journal
     topics: TopicMap,
+    /// Responsible for saving and loading entries
+    persistence: P,
 }
 
-impl Journal {
+impl<P> Journal<P>
+where
+    P: EntryPersistenceTrait,
+{
     pub fn with_topic<T>(&self, topic: &T) -> Result<&Topic>
     where
         T: AsRef<str>,
@@ -23,7 +30,7 @@ impl Journal {
             .with_context(|| format!("Topic Not Found [{}]", topic.as_ref()))
     }
 
-    pub fn persist(&self, entry: &Entry) -> Result<PathBuf> {
+    pub fn persist_entry(&self, entry: &Entry) -> Result<PathBuf> {
         let topic = self.with_topic(&entry.topic_name())?;
 
         let file_location = self
@@ -32,8 +39,16 @@ impl Journal {
             .join(topic.dir_mapper().map(entry)?)
             .join(topic.filename_mapper().map(entry)?);
 
-        // TODO: persist; maybe with an adapter trait
-        todo!()
+        let data = &self.persistence.serialize(entry)?;
+        self.persistence.persist(&file_location, data)?;
+        Ok(file_location)
+    }
+
+    pub fn fetch_entry(&self, path: &Path) -> Result<Entry> {
+        let data = self.persistence.load(path)?;
+        let mut entry = self.persistence.deserialize(data)?;
+        entry.file_loc = Some(path.into());
+        Ok(entry)
     }
 }
 
@@ -41,10 +56,12 @@ impl Journal {
 mod test {
     use crate::prelude::*;
     use crate::support::prelude::*;
+    use pretty_assertions::assert_eq;
 
     #[rstest]
     fn full_generation() -> Result<()> {
         let journal = Journal {
+            persistence: EntryFilePersistence {},
             source_root: "/tmp/mdbook-journal-test".into(),
             topics: TopicMap::default().insert(
                 Topic::builder("code-blog")
@@ -56,10 +73,41 @@ mod test {
         let topic = journal.with_topic(&"code-blog")?;
         assert_eq!("code-blog", topic.name());
 
-        // TODO: let test_generation = TestEntryGeneration::new();
-        // TODO: let entry = topic.generate_entry(test_generation);
-        // TODO: let file_location = journal.persist(&entry)?;
-        // TODO: let reloaded = journal.load(&file_location)?;
+        let mut adapter = MockEntryGenerationTrait::new();
+
+        adapter
+            .expect_created_at()
+            .returning(|| Ok(Utc.with_ymd_and_hms(2024, 10, 19, 16, 20, 0).unwrap()));
+
+        adapter
+            .expect_collect_value()
+            .withf(|var| var.key() == "title")
+            .returning(|_| Ok(Some(MetaValue::String("Test Entry".to_owned()))));
+
+        adapter
+            .expect_generate_content()
+            .withf(|topic, _builder| topic.name() == "code-blog")
+            .returning(|_, builder| Ok(builder.content("Yo Dawg")));
+
+        let entry = topic.generate_entry(adapter)?;
+
+        assert_eq!(entry.topic_name(), "code-blog");
+        assert_eq!(entry.created_at().year(), 2024);
+        assert_eq!(entry.created_at().month(), 10);
+        assert_eq!(
+            entry.meta_value(&"title").unwrap(),
+            &MetaValue::String("Test Entry".to_owned())
+        );
+        assert_eq!(entry.content(), "Yo Dawg");
+
+        let file_location = journal.persist_entry(&entry)?;
+        let reloaded = journal.fetch_entry(&file_location)?;
+
+        assert_eq!(entry.topic_name(), reloaded.topic_name());
+        assert_eq!(entry.created_at(), reloaded.created_at());
+        assert_eq!(entry.content(), reloaded.content());
+        assert_eq!(entry.meta_value(&"title"), reloaded.meta_value(&"title"));
+        assert_eq!(&file_location, reloaded.file_location().unwrap());
 
         Ok(())
     }

@@ -1,4 +1,4 @@
-use super::*;
+use crate::prelude::*;
 
 #[derive(Debug)]
 pub struct EntryBuilder {
@@ -43,6 +43,11 @@ impl EntryBuilder {
     {
         let filename: PathBuf = file_name.into();
         self.entry.file_loc = filename.file_name().map(Into::into);
+        self
+    }
+
+    pub fn add_meta(mut self, meta: EntryMeta) -> Self {
+        self.entry.meta = meta;
         self
     }
 

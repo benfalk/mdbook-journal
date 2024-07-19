@@ -1,7 +1,7 @@
 use crate::prelude::*;
 
 #[derive(Debug)]
-pub struct DirMapper<'a> {
+pub(crate) struct DirMapper<'a> {
     topic: &'a Topic,
 }
 

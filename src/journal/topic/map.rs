@@ -1,7 +1,4 @@
-use super::TopicName;
 use crate::prelude::*;
-
-use std::collections::BTreeMap;
 
 /// Journal Topic Map
 ///

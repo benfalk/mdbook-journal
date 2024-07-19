@@ -1,16 +1,9 @@
-use std::path::PathBuf;
-
-use once_cell::sync::{Lazy, OnceCell};
-use serde_yaml::Value;
-
-use super::Topic;
-
 use crate::prelude::*;
 
-static DEFAULT_TITLE: Lazy<Value> = Lazy::new(|| Value::String("Untitled".to_owned()));
+static DEFAULT_TITLE: Lazy<MetaValue> = Lazy::new(|| MetaValue::String("Untitled".to_owned()));
 
 #[derive(Debug)]
-pub struct FilenameMapper<'a> {
+pub(crate) struct FilenameMapper<'a> {
     topic: &'a Topic,
 }
 
