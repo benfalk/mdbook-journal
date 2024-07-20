@@ -1,6 +1,7 @@
 #![allow(dead_code, unused_imports)]
 
 mod journal;
+pub mod mdbook;
 
 #[cfg(test)]
 mod support;
@@ -10,7 +11,7 @@ pub use journal::*;
 mod prelude {
     pub(crate) use super::*;
 
-    pub(crate) use anyhow::{bail, Context, Result};
+    pub(crate) use anyhow::{bail, Context, Ok, Result};
     pub(crate) use chrono::{DateTime, Utc};
     pub(crate) use convert_case::{Case, Casing};
     pub(crate) use once_cell::sync::{Lazy, OnceCell};

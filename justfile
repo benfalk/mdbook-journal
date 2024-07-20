@@ -21,6 +21,14 @@ test *FLAGS:
 benchmark *FLAGS:
   cargo criterion {{FLAGS}}
 
+# Run fresh compiled command
+run *FLAGS:
+  @cargo run -q --release -- {{FLAGS}}
+
+# Installs project binary locally
+install:
+  cargo install --path {{justfile_directory()}}
+
 # generate documentation
 doc:
   mdbook build

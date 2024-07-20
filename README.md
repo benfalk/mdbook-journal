@@ -1,3 +1,5 @@
+<!-- -->
+
 # mdbook-journal
 
 ## Getting Started
@@ -56,3 +58,14 @@
    ```bash
    just init
    ```
+
+5. Install `mdbook-journal` Locally
+
+   Create a production build of the binary and install it to your
+   crate local binary location:
+
+   ```bash
+   just install
+   ```
+
+6. [Read the Docs](./docs/useage.md)

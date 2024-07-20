@@ -1,6 +1,6 @@
 [package]
 name = "mdbook-journal"
-version = "0.1.0"
+version = "0.1.0-alpha"
 authors = ["Ben Falk <benjamin.falk@yahoo.com>"]
 edition = "2021"
 # keywords = []
@@ -23,7 +23,8 @@ toml_edit = "0.22"
 toml = "0.8"
 chrono = "0.4"
 thiserror = "1.0"
-handlebars = "5.1"
+handlebars = "6.0"
+mdbook = "0.4"
 markdown-it = "0.6"
 markdown-it-front-matter = "0.3"
 log = "0.4"

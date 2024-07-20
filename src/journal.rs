@@ -26,6 +26,10 @@ impl<LOADER> Journal<LOADER>
 where
     LOADER: JournalLoaderTrait,
 {
+    pub fn install(config: LOADER::ConfigSource) -> Result<()> {
+        LOADER::install(config)
+    }
+
     pub fn load(config: LOADER::ConfigSource) -> Result<Self> {
         let (persistence, topics, source_root) = LOADER::load(config)?;
 
