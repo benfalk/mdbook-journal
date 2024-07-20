@@ -1,26 +1,41 @@
 use crate::prelude::*;
 
 mod entry;
+mod loader;
 mod persistence;
 mod topic;
 
 pub use entry::*;
+pub use loader::*;
 pub use persistence::*;
 pub use topic::*;
 
-pub struct Journal<P: EntryPersistenceTrait> {
+pub struct Journal<LOADER>
+where
+    LOADER: JournalLoaderTrait,
+{
     /// directory realative to the mdbook `SUMMARY.md`
     source_root: PathBuf,
     /// All of the topics tracked by journal
     topics: TopicMap,
     /// Responsible for saving and loading entries
-    persistence: P,
+    persistence: LOADER::DataDriver,
 }
 
-impl<P> Journal<P>
+impl<LOADER> Journal<LOADER>
 where
-    P: EntryPersistenceTrait,
+    LOADER: JournalLoaderTrait,
 {
+    pub fn load(config: LOADER::ConfigSource) -> Result<Self> {
+        let (persistence, topics, source_root) = LOADER::load(config)?;
+
+        Ok(Self {
+            source_root,
+            persistence,
+            topics,
+        })
+    }
+
     pub fn with_topic<T>(&self, topic: &T) -> Result<&Topic>
     where
         T: AsRef<str>,
@@ -60,7 +75,7 @@ mod test {
 
     #[rstest]
     fn full_generation() -> Result<()> {
-        let journal = Journal {
+        let journal: Journal<MockJournalLoaderTrait> = Journal {
             persistence: EntryFilePersistence {},
             source_root: "/tmp/mdbook-journal-test".into(),
             topics: TopicMap::default().insert(

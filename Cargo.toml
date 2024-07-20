@@ -7,7 +7,7 @@ edition = "2021"
 # categories = []
 
 [features]
-default = []
+default = ["cli"]
 cli = ["clap", "env_logger"]
 
 [[bin]]

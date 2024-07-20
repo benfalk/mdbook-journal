@@ -1,3 +1,5 @@
+use crate::prelude::*;
+
 mod builder;
 mod dir_mapper;
 mod filename_mapper;
@@ -5,7 +7,9 @@ mod map;
 mod traits;
 mod variables;
 
-use crate::prelude::*;
+//#[cfg(cli)]
+pub mod cli_entry;
+
 pub use builder::*;
 pub use dir_mapper::*;
 pub use filename_mapper::*;
