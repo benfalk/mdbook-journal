@@ -1,3 +1,3 @@
-mod entry_persistence;
+mod persistence;
 
-pub use entry_persistence::*;
+pub use persistence::*;

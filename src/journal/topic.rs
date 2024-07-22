@@ -7,7 +7,6 @@ mod map;
 mod traits;
 mod variables;
 
-//#[cfg(cli)]
 pub mod cli_entry;
 
 pub use builder::*;
@@ -89,5 +88,9 @@ impl Topic {
 
     pub fn source_root(&self) -> &PathBuf {
         &self.source_root
+    }
+
+    pub fn virtual_root(&self) -> &PathBuf {
+        &self.virtual_root
     }
 }

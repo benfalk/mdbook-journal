@@ -3,7 +3,10 @@
 use crate::prelude::*;
 
 mod prelude {
-    pub(super) use ::mdbook::{Config, MDBook};
+    pub(super) use ::mdbook::{
+        book::{Book, BookItem, Chapter},
+        Config,
+    };
 }
 
 /// Util functions for working with the `book.toml`
@@ -18,3 +21,10 @@ pub mod config;
 /// serve to covert foreign data.
 ///
 pub mod dto;
+
+/// All preprocessor systems for the mdBook system
+/// are kept in this module.  These are reposible
+/// for updating a `mdBook` with `Journal` data in
+/// some way.
+///
+pub mod preprocessor;

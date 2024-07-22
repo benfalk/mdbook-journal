@@ -165,3 +165,22 @@ title: Documention of the Future
       }
   }
   ```
+
+## List Entries for Topic
+
+```bash
+markdown-journal ls code-blog
+```
+
+```text
+/tmp/rofl/src/code-blog/2024/July/22-01-14-50-whammy!.md
+/tmp/rofl/src/code-blog/2024/July/22-01-19-14-anchors-aweigh.md
+/tmp/rofl/src/code-blog/2024/July/22-01-02-05-i-love-rust.md
+```
+
+## Generation
+
+This currently is a very primitive preprocessor attached to
+the rendering pipeline. With this bear minimum setup it creates
+a different top level container for each topic. Each entry is
+included with the newest sorted to the top.

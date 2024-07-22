@@ -2,11 +2,11 @@ use crate::prelude::*;
 
 #[cfg_attr(test, automock(
     type ConfigSource=String;
-    type DataDriver=EntryFilePersistence;
+    type DataDriver=FilePersistence;
 ))]
 pub trait JournalLoaderTrait {
     type ConfigSource;
-    type DataDriver: EntryPersistenceTrait;
+    type DataDriver: PersistenceTrait;
 
     fn load(config_source: Self::ConfigSource) -> Result<(Self::DataDriver, TopicMap, PathBuf)>;
 

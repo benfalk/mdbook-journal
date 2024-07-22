@@ -49,6 +49,10 @@ where
             .with_context(|| format!("Topic Not Found [{}]", topic.as_ref()))
     }
 
+    pub fn each_topic(&self) -> impl Iterator<Item = &Topic> {
+        self.topics.iter()
+    }
+
     pub fn persist_entry(&self, entry: &Entry) -> Result<PathBuf> {
         let topic = self.with_topic(&entry.topic_name())?;
 
@@ -64,10 +68,19 @@ where
     }
 
     pub fn fetch_entry(&self, path: &Path) -> Result<Entry> {
-        let data = self.persistence.load(path)?;
-        let mut entry = self.persistence.deserialize(data)?;
-        entry.file_loc = Some(path.into());
-        Ok(entry)
+        self.persistence.fetch(path)
+    }
+
+    pub fn entries_for_topic<T>(&self, topic: &T) -> Result<Vec<Entry>>
+    where
+        T: AsRef<str>,
+    {
+        self.persistence
+            .query(&Query::ForTopic(self.with_topic(topic)?))
+    }
+
+    pub fn all_entries(&self) -> Result<Vec<Entry>> {
+        self.persistence.query(&Query::AllEntries)
     }
 }
 
@@ -80,7 +93,7 @@ mod test {
     #[rstest]
     fn full_generation() -> Result<()> {
         let journal: Journal<MockJournalLoaderTrait> = Journal {
-            persistence: EntryFilePersistence {},
+            persistence: FilePersistence::new("/tmp/mdbook-journal-test"),
             source_root: "/tmp/mdbook-journal-test".into(),
             topics: TopicMap::default().insert(
                 Topic::builder("code-blog")
@@ -128,6 +141,11 @@ mod test {
         assert_eq!(entry.meta_value(&"title"), reloaded.meta_value(&"title"));
         assert_eq!(&file_location, reloaded.file_location().unwrap());
 
+        let entries = journal.entries_for_topic(&"code-blog")?;
+        assert_eq!(entry.meta_value(&"title"), entries[0].meta_value(&"title"));
+
+        let entries = journal.all_entries()?;
+        assert_eq!(entry.meta_value(&"title"), entries[0].meta_value(&"title"));
         Ok(())
     }
 }

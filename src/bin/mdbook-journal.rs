@@ -2,8 +2,9 @@
 // Generate a MD
 //
 use clap::{Parser, Subcommand};
+use mdbook::preprocess::Preprocessor;
+use mdbook_journal::mdbook::preprocessor::{fetch_context, NaivePreprocessor};
 use mdbook_journal::{cli_entry, CliLoader, Journal};
-use std::path::PathBuf;
 
 fn main() -> anyhow::Result<()> {
     let args = Cli::parse();
@@ -11,7 +12,11 @@ fn main() -> anyhow::Result<()> {
 
     match args.command.unwrap_or_default() {
         Command::Process => {
-            todo!("Support mdBook Processing")
+            let (ctx, book) = fetch_context(std::io::stdin())?;
+            let journal = Journal::<CliLoader>::load(config_file)?;
+            let processor = NaivePreprocessor::new(journal);
+            let book = processor.run(&ctx, book)?;
+            serde_json::to_writer(std::io::stdout(), &book)?;
         }
         Command::Supports { .. } => {
             // Do nothing for now; we support all
@@ -24,6 +29,14 @@ fn main() -> anyhow::Result<()> {
             let path = journal.persist_entry(entry)?;
             println!("Entry Created: {}", path.display());
         }
+        Command::Ls { topic } => {
+            let journal = Journal::<CliLoader>::load(config_file)?;
+            for entry in journal.entries_for_topic(&topic)? {
+                if let Some(path) = entry.file_location() {
+                    println!("{}", path.display());
+                }
+            }
+        }
     }
 
     Ok(())
@@ -35,7 +48,7 @@ fn main() -> anyhow::Result<()> {
 #[command(version)]
 struct Cli {
     #[arg(short, long, default_value = "book.toml")]
-    config: PathBuf,
+    config: std::path::PathBuf,
     #[command(subcommand)]
     command: Option<Command>,
 }
@@ -51,6 +64,11 @@ enum Command {
     /// Create a new topic entry
     New {
         /// topic to use
+        topic: String,
+    },
+    /// List out topics
+    Ls {
+        /// Topic to list out
         topic: String,
     },
     /// (default) Process mdbook from stdin
