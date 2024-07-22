@@ -54,6 +54,13 @@ impl Topic {
         FilenameMapper::new(self)
     }
 
+    pub(crate) fn virtual_path(&self, entry: &Entry) -> Result<PathBuf> {
+        Ok(self
+            .virtual_root
+            .join(self.dir_mapper().map(entry)?)
+            .join(self.filename_mapper().map(entry)?))
+    }
+
     pub fn name(&self) -> &str {
         self.name.as_ref()
     }

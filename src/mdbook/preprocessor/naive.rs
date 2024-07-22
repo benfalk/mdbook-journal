@@ -63,14 +63,11 @@ fn entry_chapter(topic: &Topic, entry: &Entry) -> BookItem {
         _ => String::from("Untitled"),
     };
     let content = entry.content().to_owned();
-    let path = entry
-        .file_location()
-        .map(|loc| topic.virtual_root().join(loc.file_name().unwrap()));
 
     BookItem::Chapter(Chapter {
         name,
         content,
-        path,
+        path: topic.virtual_path(entry).ok(),
         source_path: entry.file_location().cloned(),
         ..Default::default()
     })
