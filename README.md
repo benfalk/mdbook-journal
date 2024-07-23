@@ -1,71 +1,129 @@
-<!-- -->
+<!-- markdownlint-disable MD041 -->
+<!-- markdownlint-disable MD013 -->
 
-# mdbook-journal
+<!-- markdownlint-disable MD033 -->
+<img alt="journing robot" src="./assets/robot-journaling.jpeg" width="100%" />
+<!-- markdownlint-enable MD033 -->
 
-## Getting Started
+---
 
-1. **Setting Up Rust**
+# 🗒️ mdBook Journal _(beta)_
 
-   In order to work with this project you'll need to setup a working
-   Rust development environment that includes `rustc` and `cargo`.
+Workflow tool that allows you to generate templated documentation,
+notes, measurements... or really anything. At it's core is the concept
+of a journal "topic". You specify what core data is tracked for
+each topic and then get to work!
 
-   - For `OSX` and `Linux`:
+**NOTE:** Plugin project for the [`mdBook`] documentation system. It's
+not very complex; however, you will need to understand how it works in
+order to take advantage of some of the functionality of this tool.
 
-     ```bash
-     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-     ```
+[`mdBook`]: https://rust-lang.github.io/mdBook/
 
-   - For `Windows`:
+## 🔩 Demo Example
 
-     [Download the installer] and follow the onscreen instructions.
+Let's say that you want to document every major [`architectural decision`]
+your team makes.
 
-     [Download the installer]: https://win.rustup.rs/x86_64
+From your `book.toml` you can define such a topic:
 
-2. **Install `cargo-binstall`**
+```toml
+# book.toml
 
-   Most of the workflows in this project lean heavily upon cargo binary
-   packages. While we could simply `cargo install <package>`, this allows
-   you to install a pre-compiled binary for your environment and avoids
-   a possible lengthy compile time.
+# Sets up mdbook-journal with your book
+[preprocessor.journal]
+command = "mdbook-journal"
 
-   - For `OSX` and `Linux`:
+# This is how you specify a topic's meta data.
+#
+# Each key maps to the front-matter which is pinned
+# to all journal entries.  Currently `title` is
+# required to generate file names.  Feel free to add
+# as many more fields that you want.
+#
+# Field Options
+#
+# - required = false
+#
+#   If a field is required this means it's creation
+#   and updates must have a valid representation of
+#   the data.  Presently that just means it cannot
+#   be empty.
+#
+# - default = ""
+#
+#   Value to provide if the field has failed the
+#   validation phase.  It should be noted that a
+#   default is also provided even if the field is
+#   not required.  ** This is likely to change **
+#
+#   This is the topic name ---+
+#                             |
+[preprocessor.journal.topics.ADR.variables]
+title = { required = true }
+category = { required = true }
+priority = { required = true, default = "low" }
+```
 
-   ```bash
-   curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
-   ```
+In this example the topic name is `ADR` and has three
+defined data points of `title`, `category`, and `priority`.
+This ensures that each record created will collect
+those three following data points.
 
-   - For `Windows`:
+Once a topic is setup an "entry" can be created for
+it. Here is an example command to create a decision
+record:
 
-   ```bash
-   Set-ExecutionPolicy Unrestricted -Scope Process; iex (iwr "https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.ps1").Content
-   ```
+```bash
+markdown-journal new ADR
+```
 
-3. **Install `just` Build Tool**
+This will produce a prompt that collects these
+data points:
 
-   `just` is the preferred build tool for this project, and that includes
-   bootstrapping the remainder of your local environment. It can be
-   installed with the following command:
+```bash
+(category)❯ psql
+(priority)❯ high
+(title)❯ Migrate from Postgres v14
+```
 
-   ```bash
-   cargo binstall just
-   ```
+Assuming the above was entered it will produce the
+following file in your project:
 
-4. **Finish Bootstrapping Environment**
+`adr/2024/July/23-02-16-12-migrate-from-postgres-v14.md`
 
-   Once you have a working rust environment you can finish setting up the
-   remainder of this project locally with the following command:
+```markdown
+---
+CREATED_AT: 2024-07-23T02:16:12.682975620+00:00
+TOPIC: ADR
+category: psql
+priority: high
+title: Migrate from Postgres v14
+---
+```
 
-   ```bash
-   just init
-   ```
+This is part of a markdown spec called [front-matter]. It
+allows for assigning specific data and is at the forefront
+of how the journal operates. All entries added this way
+are automatically included in the generated HTML documents
+without needing to include them in the `SUMMARY.md` file.
 
-5. Install `mdbook-journal` Locally
+[`architectural decision`]: https://adr.github.io/
 
-   Create a production build of the binary and install it to your
-   crate local binary location:
+## ⚙️ Install Locally
 
-   ```bash
-   just install
-   ```
+Currently to install you'll need to clone this repo and
+install with cargo:
 
-6. [Read the Docs](./docs/useage.md)
+```bash
+git clone https://github.com/benfalk/mdbook-journal.git
+cargo install --path mdbook-journal
+```
+
+Verify that it's installed correctly:
+
+```bash
+mdbook-journal -V
+```
+
+`mdbook-journal 0.1.2-alpha`

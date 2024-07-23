@@ -2,4 +2,5 @@
 
 [README](./README.md)
 
-- [USAGE](docs/useage.md)
+- [Useage](docs/useage.md)
+- [Development Setup](./docs/development-setup.md)

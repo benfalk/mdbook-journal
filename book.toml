@@ -1,3 +1,10 @@
 [book]
 title = "mdbook-journal Documentation"
+description = "documentation workflows"
 src = "."
+
+[output.html]
+default-theme = "rust"
+preferred-dark-theme = "navy"
+git-repository-url = "https://github.com/benfalk/mdbook-journal"
+edit-url-template = "https://github.com/benfalk/mdbook-journal/edit/main/{path}"
