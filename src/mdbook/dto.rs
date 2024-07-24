@@ -11,6 +11,7 @@ pub struct TopicMapDto {
 pub struct TopicDto {
     pub virtual_root: Option<PathBuf>,
     pub source_root: Option<PathBuf>,
+    pub path_mapping: Option<String>,
     pub variables: VariableMapDto,
 }
 
@@ -47,14 +48,16 @@ impl TryFrom<TopicMapDto> for TopicMap {
             .data
             .into_iter()
             .try_fold(Self::default(), |map, key_val| {
-                map.insert(Topic::from(key_val))
+                map.insert(Topic::try_from(key_val)?)
             })
             .context("folding for TopicMap")
     }
 }
 
-impl From<(String, TopicDto)> for Topic {
-    fn from((name, topic): (String, TopicDto)) -> Self {
+impl TryFrom<(String, TopicDto)> for Topic {
+    type Error = anyhow::Error;
+
+    fn try_from((name, topic): (String, TopicDto)) -> Result<Self> {
         let mut builder = Topic::builder(name);
 
         if let Some(path) = topic.source_root {
@@ -65,11 +68,17 @@ impl From<(String, TopicDto)> for Topic {
             builder = builder.with_virtual_root(path);
         }
 
+        if let Some(mapping) = topic.path_mapping {
+            builder = builder
+                .with_path_mapping(mapping.as_str())
+                .with_context(|| format!("mapping with {}", mapping.as_str()))?;
+        }
+
         for key_val in topic.variables.data.into_iter() {
             builder = builder.add_variable(Variable::from(key_val));
         }
 
-        builder.build()
+        Ok(builder.build())
     }
 }
 

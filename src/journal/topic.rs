@@ -1,17 +1,16 @@
 use crate::prelude::*;
 
 mod builder;
-mod dir_mapper;
-mod filename_mapper;
 mod map;
+mod path_mapping;
 mod traits;
 mod variables;
+
+use path_mapping::PathMapping;
 
 pub mod cli_entry;
 
 pub use builder::*;
-pub use dir_mapper::*;
-pub use filename_mapper::*;
 pub use map::*;
 pub use traits::*;
 pub use variables::*;
@@ -36,6 +35,9 @@ pub struct Topic {
     /// describes data that will be collected for
     /// a freshly created `Entry`
     variables: VariableMap,
+    /// contains the logic for mapping an `Entry` to
+    /// a specific file
+    path_mapping: PathMapping,
 }
 
 impl Topic {
@@ -46,19 +48,12 @@ impl Topic {
         TopicBuilder::new(name)
     }
 
-    pub(crate) fn dir_mapper(&self) -> DirMapper<'_> {
-        DirMapper::new(self)
+    pub fn virtual_path(&self, entry: &Entry) -> Result<PathBuf> {
+        Ok(self.virtual_root.join(self.path_mapping.map(entry)?))
     }
 
-    pub(crate) fn filename_mapper(&self) -> FilenameMapper<'_> {
-        FilenameMapper::new(self)
-    }
-
-    pub(crate) fn virtual_path(&self, entry: &Entry) -> Result<PathBuf> {
-        Ok(self
-            .virtual_root
-            .join(self.dir_mapper().map(entry)?)
-            .join(self.filename_mapper().map(entry)?))
+    pub fn source_path(&self, entry: &Entry) -> Result<PathBuf> {
+        Ok(self.source_root.join(self.path_mapping.map(entry)?))
     }
 
     pub fn name(&self) -> &str {

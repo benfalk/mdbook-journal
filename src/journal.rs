@@ -55,13 +55,7 @@ where
 
     pub fn persist_entry(&self, entry: &Entry) -> Result<PathBuf> {
         let topic = self.with_topic(&entry.topic_name())?;
-
-        let file_location = self
-            .source_root
-            .join(topic.source_root())
-            .join(topic.dir_mapper().map(entry)?)
-            .join(topic.filename_mapper().map(entry)?);
-
+        let file_location = self.source_root.join(topic.source_path(entry)?);
         let data = &self.persistence.serialize(entry)?;
         self.persistence.persist(&file_location, data)?;
         Ok(file_location)

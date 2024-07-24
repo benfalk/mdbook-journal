@@ -1,6 +1,6 @@
 [package]
 name = "mdbook-journal"
-version = "0.1.2-alpha"
+version = "0.1.3-alpha"
 authors = ["Ben Falk <benjamin.falk@yahoo.com>"]
 edition = "2021"
 # keywords = []
@@ -23,7 +23,7 @@ toml_edit = "0.22"
 toml = "0.8"
 chrono = "0.4"
 thiserror = "1.0"
-handlebars = "6.0"
+handlebars = { version = "6.0", features = ["string_helpers"] }
 mdbook = "0.4"
 markdown-it = "0.6"
 markdown-it-front-matter = "0.3"
@@ -41,7 +41,7 @@ clap = { version = "4.5", features = ["std", "derive"], optional = true }
 criterion = { version = "0.5", features = ["html_reports"] }
 pretty_assertions = "1.4"
 rstest = "0.21"
-mockall = "0.12"
+mockall = "0.13"
 
 [[bench]]
 name = "benches"

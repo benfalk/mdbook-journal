@@ -1,4 +1,11 @@
+use super::*;
 use crate::prelude::*;
+
+static DEFAULT_MAPPING: Lazy<PathMapping> = Lazy::new(|| {
+    PathMapping::try_from("%Y/%B/%d-%H-%M-%S-{{kebabCase title}}")
+        .context("creating default topic mapping")
+        .unwrap()
+});
 
 // Helper that allows dynamic overrides when
 // constructing a `Topic`
@@ -9,6 +16,7 @@ pub struct TopicBuilder {
     virtual_root: PathBuf,
     source_root: PathBuf,
     variables: VariableMap,
+    path_mapping: Option<PathMapping>,
 }
 
 impl TopicBuilder {
@@ -21,6 +29,7 @@ impl TopicBuilder {
             virtual_root: name.clone().into(),
             source_root: name.clone().into(),
             variables: VariableMap::default(),
+            path_mapping: None,
             name,
         }
     }
@@ -45,6 +54,15 @@ impl TopicBuilder {
         }
     }
 
+    pub fn with_path_mapping<M>(mut self, mapping: M) -> Result<Self>
+    where
+        M: AsRef<str>,
+    {
+        let path_mapping = mapping.as_ref().try_into()?;
+        self.path_mapping = Some(path_mapping);
+        Ok(self)
+    }
+
     pub fn add_variable(mut self, var: Variable) -> Self {
         self.variables.insert(var);
         self
@@ -56,6 +74,7 @@ impl TopicBuilder {
             source_root: self.source_root,
             virtual_root: self.virtual_root,
             variables: self.variables,
+            path_mapping: self.path_mapping.unwrap_or_else(|| DEFAULT_MAPPING.clone()),
         }
     }
 }

@@ -34,6 +34,25 @@ From your `book.toml` you can define such a topic:
 [preprocessor.journal]
 command = "mdbook-journal"
 
+[preprocessor.journal.topics.ADR]
+# The `path_mapping` drives the strategy for generating
+# the path location of each entry.  It supports a mixture
+# of handlebars for any topic data and also is formatted
+# against the `CREATED_AT` time.
+#
+# In this example the directory structure will be the
+# year of the title as the root directory, followed by
+# a directory for the category, and then lastly the title
+# as the filename.  It should be pointed out that a `.md`
+# extension is automatically appended to the path.
+#
+# Date Interpolation Docs:
+#   <https://docs.rs/chrono/latest/chrono/format/strftime/index.html>
+#
+# default = "%Y/%B/%d-%H-%M-%S-{{kebabCase title}}"
+#
+path_mapping = "%Y/{{kebabCase category}}/{{kebabCase title}}"
+
 # This is how you specify a topic's meta data.
 #
 # Each key maps to the front-matter which is pinned
@@ -90,7 +109,7 @@ data points:
 Assuming the above was entered it will produce the
 following file in your project:
 
-`adr/2024/July/23-02-16-12-migrate-from-postgres-v14.md`
+`ADR/2024/psql/migrate-from-postgres-v14.md`
 
 ```markdown
 ---
@@ -126,4 +145,4 @@ Verify that it's installed correctly:
 mdbook-journal -V
 ```
 
-`mdbook-journal 0.1.2-alpha`
+`mdbook-journal 0.1.3-alpha`
