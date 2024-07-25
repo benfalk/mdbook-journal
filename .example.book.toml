@@ -1,0 +1,91 @@
+# Example "book.toml" that demonstrates how to setup
+# setup a simple Architectural Decision Record
+#
+[book]
+authors = ["Crazy Dev"]
+language = "en"
+multilingual = false
+src = "src"
+title = "roflcopterz"
+
+# You'll need `mdbook-journal` in your path
+# make sure the following command works:
+#
+#   `mdbook-journal -V`
+#
+[preprocessor.journal]
+command = "mdbook-journal"
+
+# Setting Up A Journal Topic
+#
+# This is how you would create a topic of "ADR".
+#
+# The key immediately after `topics` is the name
+# of the topic. --------------+
+#                             |
+[preprocessor.journal.topics.ADR]
+
+# The `path_mapping` drives the strategy for generating
+# the path location of each entry.  It supports a mixture
+# of handlebars for any topic data and also is formatted
+# against the `CREATED_AT` time.
+#
+# In this example the directory structure will be the
+# year of the title as the root directory, followed by
+# a directory for the category, and then lastly the title
+# as the filename.  It should be pointed out that a `.md`
+# extension is automatically appended to the path.
+#
+# Date Interpolation Docs:
+#   <https://docs.rs/chrono/latest/chrono/format/strftime/index.html>
+#
+# default = "%Y/%B/%d-%H-%M-%S-{{kebabCase title}}"
+#
+path_mapping = "%Y/{{kebabCase category}}/{{kebabCase title}}"
+
+# Entry Template
+#
+# String template value that is used when generating
+# a new "Entry" for this topic.  This template is
+# interpolated with the data provided from the required
+# variables.
+#
+# default = ""
+#
+template = """
+
+## Category: **{{category}}**
+## ADR: **{{titleCase title}}**
+### Problem Statement
+  What are we solving for?
+"""
+
+# This is how you specify a topic's meta data.
+#
+# Each key maps to the front-matter which is pinned
+# to all journal entries.  Currently `title` is
+# required to generate file names.  Feel free to add
+# as many more fields that you want.
+#
+# Field Options
+#
+# - required = false
+#
+#   If a field is required this means it's creation
+#   and updates must have a valid representation of
+#   the data.  Presently that just means it cannot
+#   be empty.
+#
+# - default = ""
+#
+#   Value to provide if the field has failed the
+#   validation phase.  It should be noted that a
+#   default is also provided even if the field is
+#   not required.  ** This is likely to change **
+#
+#   This is the topic name ---+
+#                             |
+[preprocessor.journal.topics.ADR.variables]
+title = { required = true }
+category = { required = true }
+priority = { required = true, default = "low" }

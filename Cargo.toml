@@ -1,6 +1,6 @@
 [package]
 name = "mdbook-journal"
-version = "0.1.3-alpha"
+version = "0.1.5-alpha"
 authors = ["Ben Falk <benjamin.falk@yahoo.com>"]
 edition = "2021"
 # keywords = []

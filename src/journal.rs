@@ -110,11 +110,6 @@ mod test {
             .withf(|var| var.key() == "title")
             .returning(|_| Ok(Some(MetaValue::String("Test Entry".to_owned()))));
 
-        adapter
-            .expect_generate_content()
-            .withf(|topic, _builder| topic.name() == "code-blog")
-            .returning(|_, builder| Ok(builder.content("Yo Dawg")));
-
         let entry = topic.generate_entry(adapter)?;
 
         assert_eq!(entry.topic_name(), "code-blog");
@@ -124,7 +119,7 @@ mod test {
             entry.meta_value(&"title").unwrap(),
             &MetaValue::String("Test Entry".to_owned())
         );
-        assert_eq!(entry.content(), "Yo Dawg");
+        assert_eq!(entry.content(), "");
 
         let file_location = journal.persist_entry(&entry)?;
         let reloaded = journal.fetch_entry(&file_location)?;

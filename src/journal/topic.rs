@@ -3,10 +3,12 @@ use crate::prelude::*;
 mod builder;
 mod map;
 mod path_mapping;
+mod template;
 mod traits;
 mod variables;
 
 use path_mapping::PathMapping;
+use template::Template;
 
 pub mod cli_entry;
 
@@ -38,6 +40,7 @@ pub struct Topic {
     /// contains the logic for mapping an `Entry` to
     /// a specific file
     path_mapping: PathMapping,
+    template: Template,
 }
 
 impl Topic {
@@ -83,8 +86,8 @@ impl Topic {
             }
         }
 
-        entry = adapter.generate_content(self, entry)?;
-
+        let content = self.template.generate_content(entry.as_ref())?;
+        let entry = entry.content(content);
         Ok(entry.build())
     }
 

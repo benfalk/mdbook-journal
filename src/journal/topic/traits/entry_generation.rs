@@ -10,8 +10,4 @@ pub trait EntryGenerationTrait {
     }
 
     fn collect_value(&self, variable: &Variable) -> Result<Option<MetaValue>>;
-
-    fn generate_content(&self, _topic: &Topic, builder: EntryBuilder) -> Result<EntryBuilder> {
-        Ok(builder.content(""))
-    }
 }

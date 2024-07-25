@@ -5,6 +5,12 @@ pub struct EntryBuilder {
     entry: Entry,
 }
 
+impl AsRef<Entry> for EntryBuilder {
+    fn as_ref(&self) -> &Entry {
+        &self.entry
+    }
+}
+
 impl EntryBuilder {
     pub(super) fn new<S>(topic: S) -> EntryBuilder
     where

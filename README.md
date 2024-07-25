@@ -28,60 +28,7 @@ your team makes.
 From your `book.toml` you can define such a topic:
 
 ```toml
-# book.toml
-
-# Sets up mdbook-journal with your book
-[preprocessor.journal]
-command = "mdbook-journal"
-
-[preprocessor.journal.topics.ADR]
-# The `path_mapping` drives the strategy for generating
-# the path location of each entry.  It supports a mixture
-# of handlebars for any topic data and also is formatted
-# against the `CREATED_AT` time.
-#
-# In this example the directory structure will be the
-# year of the title as the root directory, followed by
-# a directory for the category, and then lastly the title
-# as the filename.  It should be pointed out that a `.md`
-# extension is automatically appended to the path.
-#
-# Date Interpolation Docs:
-#   <https://docs.rs/chrono/latest/chrono/format/strftime/index.html>
-#
-# default = "%Y/%B/%d-%H-%M-%S-{{kebabCase title}}"
-#
-path_mapping = "%Y/{{kebabCase category}}/{{kebabCase title}}"
-
-# This is how you specify a topic's meta data.
-#
-# Each key maps to the front-matter which is pinned
-# to all journal entries.  Currently `title` is
-# required to generate file names.  Feel free to add
-# as many more fields that you want.
-#
-# Field Options
-#
-# - required = false
-#
-#   If a field is required this means it's creation
-#   and updates must have a valid representation of
-#   the data.  Presently that just means it cannot
-#   be empty.
-#
-# - default = ""
-#
-#   Value to provide if the field has failed the
-#   validation phase.  It should be noted that a
-#   default is also provided even if the field is
-#   not required.  ** This is likely to change **
-#
-#   This is the topic name ---+
-#                             |
-[preprocessor.journal.topics.ADR.variables]
-title = { required = true }
-category = { required = true }
-priority = { required = true, default = "low" }
+{{#include .example.book.toml}}
 ```
 
 In this example the topic name is `ADR` and has three
@@ -93,6 +40,8 @@ Once a topic is setup an "entry" can be created for
 it. Here is an example command to create a decision
 record:
 
+![Panic for Pleasure](./assets/panic-for-pleasure-demo.png)
+
 ```bash
 markdown-journal new ADR
 ```
@@ -101,27 +50,35 @@ This will produce a prompt that collects these
 data points:
 
 ```bash
-(category)❯ psql
+(category)❯ rust
 (priority)❯ high
-(title)❯ Migrate from Postgres v14
+(title)❯ panic for pleasure
 ```
 
 Assuming the above was entered it will produce the
 following file in your project:
 
-`ADR/2024/psql/migrate-from-postgres-v14.md`
+`src/ADR/2024/rust/panic-for-pleasure.md`
 
 ```markdown
 ---
-CREATED_AT: 2024-07-23T02:16:12.682975620+00:00
+CREATED_AT: 2024-07-25T00:46:13.541231172+00:00
 TOPIC: ADR
-category: psql
+category: rust
 priority: high
-title: Migrate from Postgres v14
+title: panic for pleasure
 ---
+
+## Category: **rust**
+
+## ADR: **Panic For Pleasure**
+
+### Problem Statement
+
+What are we solving for?
 ```
 
-This is part of a markdown spec called [front-matter]. It
+This top part of a markdown spec called `front matter`. It
 allows for assigning specific data and is at the forefront
 of how the journal operates. All entries added this way
 are automatically included in the generated HTML documents
@@ -145,4 +102,4 @@ Verify that it's installed correctly:
 mdbook-journal -V
 ```
 
-`mdbook-journal 0.1.3-alpha`
+`mdbook-journal 0.1.5-alpha`

@@ -12,6 +12,7 @@ pub struct TopicDto {
     pub virtual_root: Option<PathBuf>,
     pub source_root: Option<PathBuf>,
     pub path_mapping: Option<String>,
+    pub template: Option<String>,
     pub variables: VariableMapDto,
 }
 
@@ -72,6 +73,12 @@ impl TryFrom<(String, TopicDto)> for Topic {
             builder = builder
                 .with_path_mapping(mapping.as_str())
                 .with_context(|| format!("mapping with {}", mapping.as_str()))?;
+        }
+
+        if let Some(template) = topic.template {
+            builder = builder
+                .with_template(template.as_str())
+                .with_context(|| format!("tempalte with: \n\n{}", template.as_str()))?;
         }
 
         for key_val in topic.variables.data.into_iter() {
