@@ -3,7 +3,7 @@
 //
 use clap::{Parser, Subcommand};
 use mdbook::preprocess::Preprocessor;
-use mdbook_journal::mdbook::preprocessor::{fetch_context, NaivePreprocessor};
+use mdbook_journal::mdbook::preprocessor::{fetch_context, SimpleDirPreprocessor};
 use mdbook_journal::{cli_entry, CliLoader, Journal};
 
 fn main() -> anyhow::Result<()> {
@@ -14,7 +14,7 @@ fn main() -> anyhow::Result<()> {
         Command::Process => {
             let (ctx, book) = fetch_context(std::io::stdin())?;
             let journal = Journal::<CliLoader>::load(config_file)?;
-            let processor = NaivePreprocessor::new(journal);
+            let processor = SimpleDirPreprocessor::new(journal);
             let book = processor.run(&ctx, book)?;
             serde_json::to_writer(std::io::stdout(), &book)?;
         }

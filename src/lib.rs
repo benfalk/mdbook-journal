@@ -1,5 +1,6 @@
 #![allow(dead_code, unused_imports)]
 
+pub mod index;
 mod journal;
 pub mod mdbook;
 

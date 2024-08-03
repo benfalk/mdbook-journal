@@ -10,7 +10,7 @@ pub use meta::*;
 ///
 /// Represents a single markdown file created from a `Topic`
 ///
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Entry {
     /// Topic identifier to which this entry belongs
     topic: TopicName,

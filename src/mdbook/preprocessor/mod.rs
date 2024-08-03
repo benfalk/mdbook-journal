@@ -10,8 +10,10 @@ mod prelude {
 }
 
 mod naive;
+mod simple_directory;
 
 pub use naive::*;
+pub use simple_directory::*;
 
 pub fn fetch_context<R: Read>(reader: R) -> Result<(PreprocessorContext, Book)> {
     ::mdbook::preprocess::CmdPreprocessor::parse_input(reader)

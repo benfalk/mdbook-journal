@@ -4,7 +4,7 @@ use crate::prelude::*;
 
 mod prelude {
     pub(super) use ::mdbook::{
-        book::{Book, BookItem, Chapter},
+        book::{Book, BookItem, Chapter, SectionNumber},
         Config,
     };
 }
@@ -28,3 +28,8 @@ pub mod dto;
 /// some way.
 ///
 pub mod preprocessor;
+
+/// Traits that serve to enhance the mdbook public
+/// types with additional functionality.
+///
+pub mod traits;

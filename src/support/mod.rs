@@ -6,6 +6,7 @@
 pub mod fixtures;
 
 pub mod prelude {
+    pub use super::fixtures;
     pub use chrono::{Datelike, TimeZone};
     pub use mockall::{mock, predicate::*};
     pub use rstest::{fixture, rstest};

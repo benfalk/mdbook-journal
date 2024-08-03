@@ -1,10 +1,15 @@
 [package]
 name = "mdbook-journal"
-version = "0.1.5-alpha"
+version = "0.2.0"
 authors = ["Ben Falk <benjamin.falk@yahoo.com>"]
 edition = "2021"
-# keywords = []
-# categories = []
+description = "journal plugin for mdBook"
+keywords = ["book", "gitbook", "mdbook", "markdown", "plugin"]
+categories = ["command-line-utilities", "template-engine"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://benfalk.github.io/mdbook-journal/"
+repository = "https://github.com/benfalk/mdbook-journal"
 
 [features]
 default = ["cli"]

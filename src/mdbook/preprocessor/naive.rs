@@ -1,5 +1,3 @@
-use std::borrow::BorrowMut;
-
 use super::prelude::*;
 use crate::prelude::*;
 
@@ -34,7 +32,7 @@ where
 
     fn run(&self, _ctx: &PreprocessorContext, mut book: Book) -> Result<Book> {
         let journal = &self.journal;
-        let writing = book.borrow_mut();
+        let writing = &mut book;
 
         for topic in journal.each_topic() {
             let mut entries = journal.entries_for_topic(&topic.name())?;

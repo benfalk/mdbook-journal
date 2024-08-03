@@ -1345,7 +1345,7 @@ dependencies = [
 
 [[package]]
 name = "mdbook-journal"
-version = "0.1.5-alpha"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "chrono",
