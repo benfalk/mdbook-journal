@@ -8,3 +8,17 @@ default-theme = "rust"
 preferred-dark-theme = "navy"
 git-repository-url = "https://github.com/benfalk/mdbook-journal"
 edit-url-template = "https://github.com/benfalk/mdbook-journal/edit/main/{path}"
+
+[preprocessor.journal]
+command = "mdbook-journal"
+
+# Journaling Ideas
+[preprocessor.journal.topics.blog]
+path_mapping = "{{kebabCase title}}"
+template = """
+
+## {{titleCase title}}
+"""
+[preprocessor.journal.topics.blog.variables]
+title = { required = true }
+category = { required = true }
