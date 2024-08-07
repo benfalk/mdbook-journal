@@ -8,11 +8,11 @@ use mdbook_journal::{cli_entry, CliLoader, Journal};
 
 fn main() -> anyhow::Result<()> {
     let args = Cli::parse();
-    let config_file = std::fs::canonicalize(args.config)?;
 
     match args.command.unwrap_or_default() {
         Command::Process => {
             let (ctx, book) = fetch_context(std::io::stdin())?;
+            let config_file = ctx.root.join("book.toml");
             let journal = Journal::<CliLoader>::load(config_file)?;
             let processor = SimpleDirPreprocessor::new(journal);
             let book = processor.run(&ctx, book)?;
@@ -23,6 +23,7 @@ fn main() -> anyhow::Result<()> {
             // render systems I'm pretty sure...
         }
         Command::New { topic } => {
+            let config_file = std::fs::canonicalize(args.config)?;
             let journal = Journal::<CliLoader>::load(config_file)?;
             let topic = journal.with_topic(&topic)?;
             let entry = &topic.generate_entry(cli_entry::std_io())?;
@@ -30,6 +31,7 @@ fn main() -> anyhow::Result<()> {
             println!("Entry Created: {}", path.display());
         }
         Command::Ls { topic } => {
+            let config_file = std::fs::canonicalize(args.config)?;
             let journal = Journal::<CliLoader>::load(config_file)?;
             for entry in journal.entries_for_topic(&topic)? {
                 if let Some(path) = entry.file_location() {
