@@ -1,0 +1,17 @@
+[book]
+authors = ["Ben Falk"]
+language = "en"
+multilingual = false
+src = "src"
+title = "Tickets Example"
+
+[preprocessor.journal.topics.ticket]
+path_mapping = "%Y-%m/{{ticket_number}}-{{kebabCase title}}"
+template = """
+
+## {{titleCase title}}
+"""
+[preprocessor.journal.topics.ticket.variables]
+title = { required = true }
+ticket_number = { required = true }
+category = { required = true }

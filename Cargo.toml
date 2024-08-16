@@ -1,6 +1,6 @@
 [package]
 name = "mdbook-journal"
-version = "0.2.1"
+version = "0.2.2"
 authors = ["Ben Falk <benjamin.falk@yahoo.com>"]
 edition = "2021"
 description = "journal plugin for mdBook"

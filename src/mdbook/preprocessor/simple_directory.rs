@@ -58,13 +58,19 @@ fn topic_chapter(topic: &Topic, entries: &[Entry], section: SectionNumber) -> Re
     let parents = vec![topic.name().to_owned()];
     let mut path = topic.virtual_root().clone();
     path.push("README.md");
-    Ok(BookItem::Chapter(Chapter {
-        sub_items: build_sub_items(
+    let sub_items = if index.is_empty() {
+        vec![]
+    } else {
+        build_sub_items(
             topic,
             &index[topic.name()],
             parents,
             section.advance_level(),
-        ),
+        )
+    };
+
+    Ok(BookItem::Chapter(Chapter {
+        sub_items,
         name: topic.name().to_owned(),
         path: Some(path),
         number: Some(section),

@@ -49,6 +49,10 @@ impl DirIndex {
     pub fn entries(&self) -> impl Iterator<Item = &Entry> {
         self.entries.iter().map(|entry| entry.as_ref())
     }
+
+    pub fn is_empty(&self) -> bool {
+        self.entries.is_empty()
+    }
 }
 
 impl std::ops::Index<&str> for DirIndex {
