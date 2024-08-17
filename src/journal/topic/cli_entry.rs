@@ -1,9 +1,9 @@
 use crate::prelude::*;
 
-pub struct CliEntryGeneration {}
+pub struct CliEntryGeneration;
 
 pub fn std_io() -> CliEntryGeneration {
-    CliEntryGeneration {}
+    CliEntryGeneration
 }
 
 impl EntryGenerationTrait for CliEntryGeneration {

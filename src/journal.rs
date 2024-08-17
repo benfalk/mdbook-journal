@@ -110,7 +110,7 @@ mod test {
             .withf(|var| var.key() == "title")
             .returning(|_| Ok(Some(MetaValue::String("Test Entry".to_owned()))));
 
-        let entry = topic.generate_entry(adapter)?;
+        let entry = topic.generate_entry(&adapter)?;
 
         assert_eq!(entry.topic_name(), "code-blog");
         assert_eq!(entry.created_at().year(), 2024);

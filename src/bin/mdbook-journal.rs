@@ -1,12 +1,13 @@
 //
 // Generate a MD
 //
-use clap::{Parser, Subcommand};
+use anyhow::Result;
+use clap::{Parser, Subcommand, ValueEnum};
 use mdbook::preprocess::Preprocessor;
 use mdbook_journal::mdbook::preprocessor::{fetch_context, SimpleDirPreprocessor};
-use mdbook_journal::{cli_entry, CliLoader, Journal};
+use mdbook_journal::{cli_entry, CliLoader, EntryGenerationTrait, Journal};
 
-fn main() -> anyhow::Result<()> {
+fn main() -> Result<()> {
     let args = Cli::parse();
 
     match args.command.unwrap_or_default() {
@@ -22,11 +23,11 @@ fn main() -> anyhow::Result<()> {
             // Do nothing for now; we support all
             // render systems I'm pretty sure...
         }
-        Command::New { topic } => {
+        Command::New { topic, input } => {
             let config_file = std::fs::canonicalize(args.config)?;
             let journal = Journal::<CliLoader>::load(config_file)?;
             let topic = journal.with_topic(&topic)?;
-            let entry = &topic.generate_entry(cli_entry::std_io())?;
+            let entry = &topic.generate_entry(input.collect()?.as_ref())?;
             let path = journal.persist_entry(entry)?;
             println!("Entry Created: {}", path.display());
         }
@@ -67,6 +68,8 @@ enum Command {
     New {
         /// topic to use
         topic: String,
+        #[arg(short, long, value_enum, default_value = "interactive")]
+        input: TopicInput,
     },
     /// List out topics
     Ls {
@@ -76,4 +79,23 @@ enum Command {
     /// (default) Process mdbook from stdin
     #[default]
     Process,
+}
+
+#[derive(Debug, Clone, Default, Copy, ValueEnum)]
+enum TopicInput {
+    #[default]
+    Interactive,
+    Json,
+}
+
+impl TopicInput {
+    fn collect(&self) -> Result<Box<dyn EntryGenerationTrait>> {
+        match self {
+            Self::Interactive => Ok(Box::new(cli_entry::std_io())),
+            Self::Json => {
+                let json: serde_json::Value = serde_json::from_reader(std::io::stdin())?;
+                Ok(Box::new(json))
+            }
+        }
+    }
 }

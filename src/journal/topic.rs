@@ -11,6 +11,7 @@ use path_mapping::PathMapping;
 use template::Template;
 
 pub mod cli_entry;
+pub mod json_entry;
 
 pub use builder::*;
 pub use map::*;
@@ -63,10 +64,7 @@ impl Topic {
         self.name.as_ref()
     }
 
-    pub fn generate_entry<A>(&self, adapter: A) -> Result<Entry>
-    where
-        A: EntryGenerationTrait,
-    {
+    pub fn generate_entry(&self, adapter: &dyn EntryGenerationTrait) -> Result<Entry> {
         let mut entry = Entry::builder(self.name());
         entry = entry.created_at(adapter.created_at()?);
 
