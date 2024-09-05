@@ -17,7 +17,8 @@ pub struct TopicBuilder {
     source_root: PathBuf,
     variables: VariableMap,
     path_mapping: Option<PathMapping>,
-    template: Template,
+    content_template: Template,
+    leaf_template: DirectoryTemplate,
 }
 
 impl TopicBuilder {
@@ -31,7 +32,8 @@ impl TopicBuilder {
             source_root: name.clone().into(),
             variables: VariableMap::default(),
             path_mapping: None,
-            template: Template::default(),
+            content_template: Template::default(),
+            leaf_template: DirectoryTemplate::default(),
             name,
         }
     }
@@ -68,7 +70,15 @@ impl TopicBuilder {
     where
         T: AsRef<str>,
     {
-        self.template = template.as_ref().try_into()?;
+        self.content_template = template.as_ref().try_into()?;
+        Ok(self)
+    }
+
+    pub fn with_leaf_template<T>(mut self, template: T) -> Result<Self>
+    where
+        T: AsRef<str>,
+    {
+        self.leaf_template = template.as_ref().try_into()?;
         Ok(self)
     }
 
@@ -84,7 +94,8 @@ impl TopicBuilder {
             virtual_root: self.virtual_root,
             variables: self.variables,
             path_mapping: self.path_mapping.unwrap_or_else(|| DEFAULT_MAPPING.clone()),
-            template: self.template,
+            content_template: self.content_template,
+            leaf_template: self.leaf_template,
         }
     }
 }

@@ -11,6 +11,19 @@ template = """
 
 ## {{titleCase title}}
 """
+leaf_template = """
+# {{path}}
+
+| Ticket # | Title |
+|----------|-------|
+{{#each entries}}
+| [{{this.meta.ticket_number}}] | {{this.meta.title}} |
+{{/each}}
+
+{{#each entries}}
+  [{{this.meta.ticket_number}}]: /{{this.virtual_path}}
+{{/each}}
+"""
 [preprocessor.journal.topics.ticket.variables]
 title = { required = true }
 ticket_number = { required = true }

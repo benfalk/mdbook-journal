@@ -7,6 +7,7 @@ mod template;
 mod traits;
 mod variables;
 
+use crate::mdbook::preprocessor::DirectoryTemplate;
 use path_mapping::PathMapping;
 use template::Template;
 
@@ -38,10 +39,15 @@ pub struct Topic {
     /// describes data that will be collected for
     /// a freshly created `Entry`
     variables: VariableMap,
-    /// contains the logic for mapping an `Entry` to
+    /// contains the logic for mapping an [Entry] to
     /// a specific file
     path_mapping: PathMapping,
-    template: Template,
+    /// template used for the initial content when
+    /// creating a new [Entry]
+    content_template: Template,
+    /// template used for a directory that contains
+    /// entries only
+    leaf_template: DirectoryTemplate,
 }
 
 impl Topic {
@@ -84,9 +90,13 @@ impl Topic {
             }
         }
 
-        let content = self.template.generate_content(entry.as_ref())?;
+        let content = self.content_template.generate_content(entry.as_ref())?;
         let entry = entry.content(content);
         Ok(entry.build())
+    }
+
+    pub fn directory_template(&self) -> &DirectoryTemplate {
+        &self.leaf_template
     }
 
     pub fn source_root(&self) -> &PathBuf {

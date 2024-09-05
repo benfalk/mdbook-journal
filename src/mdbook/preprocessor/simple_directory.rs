@@ -1,10 +1,11 @@
 use super::prelude::*;
 use crate::prelude::*;
 
+mod directory_template;
+
 use crate::index::DirIndex;
 use crate::mdbook::traits::*;
-use handlebars::Handlebars;
-use once_cell::sync::Lazy;
+pub use directory_template::*;
 
 pub struct SimpleDirPreprocessor<T>
 where
@@ -12,34 +13,6 @@ where
 {
     journal: Journal<T>,
 }
-
-pub struct LeafTemplate(Handlebars<'static>);
-
-impl TryFrom<&str> for LeafTemplate {
-    type Error = anyhow::Error;
-
-    fn try_from(value: &str) -> Result<Self> {
-        let mut registry = Handlebars::new();
-        registry.register_template_string("tpl", value)?;
-        Ok(Self(registry))
-    }
-}
-
-impl LeafTemplate {
-    fn generate_content<T>(&self, data: &T) -> Result<String>
-    where
-        T: Serialize,
-    {
-        Ok(self.0.render("tpl", data)?)
-    }
-}
-
-static DEFAULT_TEMPLATE: Lazy<LeafTemplate> = Lazy::new(|| {
-    let tmpl = r#"# Index for `{{path}}`"#;
-    LeafTemplate::try_from(tmpl)
-        .with_context(|| format!("processing template:\n\n{tmpl}"))
-        .unwrap()
-});
 
 impl<T> SimpleDirPreprocessor<T>
 where
@@ -96,7 +69,7 @@ fn topic_chapter(topic: &Topic, entries: &[Entry], section: SectionNumber) -> Re
             &index[topic.name()],
             parents,
             section.advance_level(),
-        )
+        )?
     };
 
     Ok(BookItem::Chapter(Chapter {
@@ -113,8 +86,8 @@ fn build_sub_items(
     index: &DirIndex,
     parents: Vec<String>,
     mut section: SectionNumber,
-) -> Vec<BookItem> {
-    if index.is_leaf() {
+) -> Result<Vec<BookItem>> {
+    Ok(if index.is_leaf() {
         index
             .entries()
             .map(|entry| {
@@ -125,36 +98,41 @@ fn build_sub_items(
     } else {
         index
             .children()
-            .map(|(name, dir)| {
+            .try_fold(Vec::new(), |mut vec, (name, dir)| {
                 let name = name.to_owned();
                 let mut new_parents = parents.clone();
                 new_parents.push(name.clone());
                 let mut path: PathBuf = new_parents.join("/").into();
                 section.increment();
                 path.push("README.md");
-                let content = build_content(dir, &path);
-                BookItem::Chapter(Chapter {
-                    sub_items: build_sub_items(topic, dir, new_parents, section.advance_level()),
+                let content = build_content(dir, &path, topic)?;
+                vec.push(BookItem::Chapter(Chapter {
+                    sub_items: build_sub_items(topic, dir, new_parents, section.advance_level())?,
                     parent_names: parents.clone(),
                     number: Some(section.clone()),
                     name,
                     path: Some(path),
                     content,
                     ..Default::default()
-                })
-            })
-            .collect()
-    }
+                }));
+                Ok(vec)
+            })?
+    })
 }
 
-fn build_content(dir: &DirIndex, path: &Path) -> String {
+fn build_content(dir: &DirIndex, path: &Path, topic: &Topic) -> Result<String> {
     if !dir.is_leaf() {
-        return String::new();
+        return Ok(String::new());
     }
+    let entries: Vec<_> = dir.entries().collect();
     let data = &serde_json::json!({
         "path": path,
+        "entries": entries,
     });
-    DEFAULT_TEMPLATE.generate_content(data).unwrap()
+    topic
+        .directory_template()
+        .generate_content(data)
+        .with_context(|| format!("Generating contant with data:\n{data:#?}"))
 }
 
 fn entry_chapter(

@@ -90,6 +90,25 @@ template = """
   What are we solving for?
 """
 
+# Leaf Template
+# 
+# String template value that is used when generating
+# index pages for leaf directory nodes.  Leafs are
+# any directory that only contain `entries` and not
+# additional directories.
+#
+# You have available `entries`; which is a collection
+# of each entry in the leaf as well as `path`; which
+# is the virtual directory of the leaf itself.
+#
+leaf_template = """
+# {{path}}
+
+{{#each entries}}
+  - [{{this.meta.title}}](/{{this.virtual_path}})
+{{/each}}
+"""
+
 # This is how you specify a topic's meta data.
 #
 # Each key maps to the front-matter which is pinned

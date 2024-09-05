@@ -1,0 +1,11 @@
+# Index for {{path}}
+
+| Title | Created At |
+| ----- | ---------- |
+{{#each entries}}
+| [{{this.meta.title}}] | ({{this.created_at}}) |
+{{/each}}
+
+{{#each entries}}
+[{{this.meta.title}}]: /{{this.virtual_path}}
+{{/each}}
