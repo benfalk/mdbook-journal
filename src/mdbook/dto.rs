@@ -13,6 +13,7 @@ pub struct TopicDto {
     pub source_root: Option<PathBuf>,
     pub path_mapping: Option<String>,
     pub template: Option<String>,
+    pub leaf_template: Option<String>,
     pub variables: VariableMapDto,
 }
 
@@ -78,7 +79,13 @@ impl TryFrom<(String, TopicDto)> for Topic {
         if let Some(template) = topic.template {
             builder = builder
                 .with_template(template.as_str())
-                .with_context(|| format!("tempalte with: \n\n{}", template.as_str()))?;
+                .with_context(|| format!("template with: \n\n{}", template.as_str()))?;
+        }
+
+        if let Some(dir_template) = topic.leaf_template {
+            builder = builder
+                .with_leaf_template(dir_template.as_str())
+                .with_context(|| format!("directory template: \n\n{}", dir_template.as_str()))?;
         }
 
         for key_val in topic.variables.data.into_iter() {

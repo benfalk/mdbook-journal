@@ -69,12 +69,28 @@ where
     where
         T: AsRef<str>,
     {
-        self.persistence
-            .query(&Query::ForTopic(self.with_topic(topic)?))
+        let mut entries = self
+            .persistence
+            .query(&Query::ForTopic(self.with_topic(topic)?))?;
+        self.hydrate_virtual_paths(&mut entries)?;
+        Ok(entries)
     }
 
     pub fn all_entries(&self) -> Result<Vec<Entry>> {
-        self.persistence.query(&Query::AllEntries)
+        let mut entries = self.persistence.query(&Query::AllEntries)?;
+        self.hydrate_virtual_paths(&mut entries)?;
+        Ok(entries)
+    }
+
+    // PRIVATE METHODS
+
+    fn hydrate_virtual_paths(&self, entries: &mut [Entry]) -> Result<()> {
+        for entry in entries {
+            let path = self.with_topic(&entry.topic_name())?.virtual_path(entry)?;
+            entry.virtual_path = Some(path);
+        }
+
+        Ok(())
     }
 }
 

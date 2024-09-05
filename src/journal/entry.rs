@@ -10,14 +10,17 @@ pub use meta::*;
 ///
 /// Represents a single markdown file created from a `Topic`
 ///
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct Entry {
     /// Topic identifier to which this entry belongs
+    #[serde(serialize_with = "serialize_topic_name")]
     topic: TopicName,
     /// Time this entry was created
+    #[serde(serialize_with = "serialize_created_at")]
     created_at: UtcDateTime,
     /// Location where this Entry is persisted to disk
     pub(crate) file_loc: Option<PathBuf>,
+    pub(crate) virtual_path: Option<PathBuf>,
     /// Additional data found in the entries front-matter
     meta: EntryMeta,
     /// The contents of the markdown file except
@@ -59,4 +62,22 @@ impl Entry {
     pub fn file_location(&self) -> Option<&PathBuf> {
         self.file_loc.as_ref()
     }
+}
+
+fn serialize_topic_name<S>(name: &TopicName, serializer: S) -> std::result::Result<S::Ok, S::Error>
+where
+    S: serde::Serializer,
+{
+    serializer.serialize_str(name.as_ref())
+}
+
+fn serialize_created_at<S>(
+    date: &UtcDateTime,
+    serializer: S,
+) -> std::result::Result<S::Ok, S::Error>
+where
+    S: serde::Serializer,
+{
+    let data = &date.to_rfc3339();
+    serializer.serialize_str(data)
 }

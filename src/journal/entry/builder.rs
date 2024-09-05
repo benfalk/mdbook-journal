@@ -23,6 +23,7 @@ impl EntryBuilder {
                 meta: EntryMeta::default(),
                 created_at: Utc::now(),
                 file_loc: None,
+                virtual_path: None,
             },
         }
     }
@@ -32,6 +33,14 @@ impl EntryBuilder {
         D: Into<UtcDateTime>,
     {
         self.entry.created_at = created_at.into();
+        self
+    }
+
+    pub fn virtual_path<P>(mut self, path: P) -> Self
+    where
+        P: Into<PathBuf>,
+    {
+        self.entry.virtual_path = Some(path.into());
         self
     }
 
