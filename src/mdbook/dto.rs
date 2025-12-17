@@ -34,7 +34,7 @@ impl TryFrom<&Config> for TopicMapDto {
     type Error = anyhow::Error;
 
     fn try_from(config: &Config) -> Result<Self> {
-        if let Some(value) = config.get("preprocessor.journal.topics") {
+        if let Some(value) = config.get::<::toml::Value>("preprocessor.journal.topics")? {
             Ok(Self::deserialize(value.clone())?)
         } else {
             Ok(Default::default())

@@ -6,7 +6,7 @@ pub trait BookExtension {
 
 impl BookExtension for Book {
     fn max_section_number(&self) -> Option<SectionNumber> {
-        self.sections
+        self.items
             .iter()
             .max_by(|left, right| {
                 let left = &root_num(left);

@@ -9,24 +9,24 @@ pub trait SectionNumberExtension: Sized {
 
 impl SectionNumberExtension for SectionNumber {
     fn root(&self) -> Option<Self> {
-        self.root_value().map(|val| Self(vec![val]))
+        self.root_value().map(|val| Self::new(vec![val]))
     }
 
     fn root_value(&self) -> Option<u32> {
         if self.is_empty() {
             None
         } else {
-            Some(self.0[0])
+            Some(self[0])
         }
     }
 
     fn advance_level(&self) -> Self {
         if self.is_empty() {
-            Self(vec![0])
+            Self::new(vec![0])
         } else {
-            let mut data = self.0.clone();
+            let mut data = self.clone();
             data.push(0);
-            Self(data)
+            data
         }
     }
 
