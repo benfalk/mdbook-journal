@@ -3,9 +3,9 @@
 use crate::prelude::*;
 
 mod prelude {
-    pub(super) use ::mdbook::{
+    pub(super) use ::mdbook_preprocessor::{
         book::{Book, BookItem, Chapter, SectionNumber},
-        Config,
+        config::Config,
     };
 }
 

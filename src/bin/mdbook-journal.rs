@@ -3,9 +3,9 @@
 //
 use anyhow::Result;
 use clap::{Parser, Subcommand, ValueEnum};
-use mdbook::preprocess::Preprocessor;
 use mdbook_journal::mdbook::preprocessor::{fetch_context, SimpleDirPreprocessor};
 use mdbook_journal::{cli_entry, CliLoader, EntryGenerationTrait, Journal};
+use mdbook_preprocessor::Preprocessor;
 
 fn main() -> Result<()> {
     let args = Cli::parse();
